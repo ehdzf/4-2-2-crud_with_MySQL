@@ -1,127 +1,113 @@
-# Fruits API
+# Fruits CRUD API with Spring Boot and MySQL
 
-A Spring Boot REST API for managing fruits inventory with MongoDB as the database.
+This project is a RESTful API for managing fruits inventory using Spring Boot and MySQL. It provides basic CRUD operations for fruits.
 
 ## Project Description
 
-This application provides a simple CRUD (Create, Read, Update, Delete) API for managing fruits. It allows you to:
-- Get a list of all fruits
-- Add new fruits to the inventory
-- Get details of a specific fruit
-- Update fruit information
-- Delete fruits from the inventory
+The Fruits CRUD API allows you to:
+- Create new fruits with name and quantity
+- Retrieve all fruits or a specific fruit by ID
+- Update existing fruits
+- (Note: Delete functionality is implemented in the service layer but not exposed as an endpoint)
 
-## Prerequisites
+## Technologies Used
 
 - Java 21
+- Spring Boot 3.4.4
+- Spring Data JPA
+- MySQL 8
 - Gradle
-- MongoDB (running on localhost:27017)
 
-## Setup Instructions
+## Configuration
 
-### 1. Clone the repository
+The application is configured to connect to a MySQL database. The configuration can be found in `src/main/resources/application.properties`:
 
-```bash
-git clone <repository-url>
-cd <repository-directory>
+```properties
+spring.application.name=S04T02N02
+spring.datasource.url=jdbc:mysql://localhost:3307/fruits
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.username=root
+spring.datasource.password=secret
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
 ```
 
-### 2. Configure MongoDB
+## Database Setup
 
-Make sure MongoDB is installed and running on your system. The application is configured to connect to:
-- Host: localhost
-- Port: 27017
-- Database: fruits
-- Password: secret
-
-You can modify these settings in `src/main/resources/application.properties` if needed.
-
-### 3. Build the application
-
-```bash
-./gradlew build
-```
-
-### 4. Run the application
-
-```bash
-./gradlew bootRun
-```
-
-The application will start on the default port 8080.
+1. Ensure you have MySQL installed and running on port 3307
+2. Create a database named `fruits`
+3. The application will automatically create the necessary tables when it starts
 
 ## API Endpoints
 
-### Get all fruits
+### Get All Fruits
 - **URL**: `/fruits`
 - **Method**: GET
 - **Response**: List of all fruits
 - **Status Code**: 200 OK
 
-### Create a new fruit
-- **URL**: `/fruits`
-- **Method**: POST
-- **Request Body**: Fruit object (JSON)
-- **Response**: Created fruit with ID
-- **Status Code**: 201 CREATED
-
-Example request body:
-```json
-{
-  "name": "Apple",
-  "quantity": 10
-}
-```
-
-### Get a specific fruit
+### Get Fruit by ID
 - **URL**: `/fruits/{id}`
 - **Method**: GET
-- **URL Params**: id (String)
-- **Response**: Fruit object
+- **URL Params**: `id=[long]`
+- **Response**: Single fruit object
 - **Status Code**: 200 OK
+- **Error Response**: 
+  - Status Code: 404 Not Found (if fruit doesn't exist)
 
-### Update a fruit
+### Create Fruit
+- **URL**: `/fruits`
+- **Method**: POST
+- **Request Body**: Fruit object
+  ```json
+  {
+    "name": "Apple",
+    "quantity": 100
+  }
+  ```
+- **Response**: Created fruit object with ID
+- **Status Code**: 201 Created
+
+### Update Fruit
 - **URL**: `/fruits/{id}`
 - **Method**: PATCH
-- **URL Params**: id (String)
-- **Request Body**: Fruit object (JSON)
+- **URL Params**: `id=[long]`
+- **Request Body**: Fruit object with updated fields
+  ```json
+  {
+    "name": "Green Apple",
+    "quantity": 150
+  }
+  ```
+- **Response**: None
 - **Status Code**: 200 OK
-
-Example request body:
-```json
-{
-  "name": "Apple",
-  "quantity": 15
-}
-```
-
-### Delete a fruit
-- **URL**: `/fruits/{id}`
-- **Method**: DELETE
-- **URL Params**: id (String)
-- **Status Code**: 200 OK
+- **Error Response**: 
+  - Status Code: 404 Not Found (if fruit doesn't exist)
 
 ## Data Model
 
 ### Fruit
+- **id**: long (auto-generated)
+- **name**: String
+- **quantity**: int
 
-| Field    | Type   | Description                    |
-|----------|--------|--------------------------------|
-| id       | String | Unique identifier (MongoDB ID) |
-| name     | String | Name of the fruit              |
-| quantity | int    | Quantity of the fruit          |
+## Running the Application
 
-## Error Handling
-
-The API includes exception handling for common errors:
-- Fruit not found
-- Invalid input data
-- Server errors
-
-## Technologies Used
-
-- Spring Boot 3.4.4
-- Spring Data MongoDB
+### Prerequisites
 - Java 21
-- Gradle
-- JUnit for testing
+- MySQL 8 running on port 3307
+
+### Steps
+1. Clone the repository
+2. Configure the database connection in `application.properties` if needed
+3. Run the application:
+   ```
+   ./gradlew bootRun
+   ```
+4. The API will be available at `http://localhost:8080`
+
+## Testing
+Run the tests using:
+```
+./gradlew test
+```
